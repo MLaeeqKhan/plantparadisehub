@@ -11,3 +11,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.row .col-1{
+  width: 30%;
+  border:2px solid aqua;
+ 
+}
+.row .col-2{
+  width: 70%;
+  height: 80vh;
+  border:2px solid aqua;
+
+}
+
+/* Chat.css */
+
+.item {
+  padding: 20px;
+}
+
+.texing {
+  margin-bottom: 20px; 
+}
+.list-group {
+ height: 70vh; 
+  width: 100%;
+  overflow-y: auto;
+}
+
+/* Add any other styling as needed */
+
