@@ -20,7 +20,7 @@ const handleChatClick = (chatId,receiverID) => {
     <>
     { chat.length?( <ul className="list-group">
 
-    {chat.map((item) => (
+    {/* {chat.map((item) => (
            <li
                 key={item._id}
                 className="list-group-item"
@@ -29,23 +29,30 @@ const handleChatClick = (chatId,receiverID) => {
                 {item.receiverID.userName}
               </li>
             
-          ))}
+          ))} */}
 
+{/* Inside the second map function */}
 {chat.map((item) => {
-   console.log('Receiver ID:', UserID);
-  console.log('Receiver ID:', item.receiverID);
-  console.log('User Name:', item.receiverID?.userName);
-  return (
-    (item.senderID === UserID || item.receiverID === UserID) && (
-      <li
-        key={item._id}
-        className="list-group-item"
-        onClick={() => handleChatClick(item._id, item.receiverID)}
-      >
-        {item.receiverID?.userName || 'Unknown User'}
-      </li>
-    )
-  );
+    console.log('User ID:', UserID);
+    console.log('Sender ID:', item.senderID);
+    console.log('Receiver ID:', item.receiverID?._id);
+    console.log('User Name:', item.receiverID?.userName);
+    
+    var isUserInChat =false;
+    isUserInChat= item.senderID === UserID || item.receiverID?._id === UserID;
+    console.log('Is User in Chat:', isUserInChat);
+
+    return (
+        isUserInChat && (
+            <li
+                key={item._id}
+                className="list-group-item"
+                onClick={() => handleChatClick(item._id, item.receiverID)}
+            >
+                {item.receiverID?.userName || 'Unknown User'}
+            </li>
+        )
+    );
 })}
 
         </ul>):(<p>You Have Currently Not Any Connectin!</p>) }
