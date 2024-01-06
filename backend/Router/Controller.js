@@ -19,7 +19,7 @@ router.get("/getUsers", async (req, res) => {
 
 router.get("/getChats", async (req, res) => {
   try {
-    var chat = await createdChats.find().populate('receiverID', 'userName');
+    var chat = await createdChats.find().populate('receiverID', 'userName').populate('senderID','userName');
     res.json({ chat });
   } catch (error) {
     console.log("Controller Chat Error:", error);

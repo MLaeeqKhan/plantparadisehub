@@ -10,6 +10,7 @@ const Chat = () => {
   const params = useParams();
   const receiver = params.receiverID;
   useEffect(() => {
+    console.log('receiverID:',receiver);
     setUpDateReceiver(receiver);
   }, [receiver]); 
 
@@ -26,6 +27,8 @@ const Chat = () => {
   const postData = async(e)=>{
     e.preventDefault();
     const {content} = message;
+    console.log("upDateReceiver:",upDateReceiver);
+
     const res = await fetch("http://localhost:5000/sendMessage",{
       method:"POST",
       headers:{
@@ -36,6 +39,7 @@ const Chat = () => {
   });
   const response = await res.json();
   if(response){
+    setMessage({content:""});
     // setChat(response);
     console.log("Chat Responce:",response);
     window.alert("Message successfully sended!");
@@ -48,9 +52,13 @@ const Chat = () => {
 const [selectedChat, setSelectedChat] = useState(null);
 
 const handleSelectChat = (chatId,receiverID) => {
+  console.log('receiverID:',receiverID);
   setUpDateReceiver(receiverID);
   setSelectedChat(chatId);
 };
+ function removeContent(params) {
+  setMessage({content:""});
+}
   return (
     <>
       <div className="container text-center">

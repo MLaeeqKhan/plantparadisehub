@@ -6,12 +6,15 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [UserID, setUserID] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+
   
 
 const setUserData=(data)=>{
  setToken(data.token || "");
       setUserID(data._id || "");
       setUserEmail(data.email || "");
+      setUserName(data.userName);
 };
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("userData"));
@@ -38,7 +41,7 @@ const setUserData=(data)=>{
   };
 
   return (
-    <AuthContext.Provider value={{ token, setUserToken, UserID, userEmail, logoutUser }}>
+    <AuthContext.Provider value={{ token, setUserToken, UserID, userEmail,userName, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );

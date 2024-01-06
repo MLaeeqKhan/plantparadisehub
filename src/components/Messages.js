@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { getMessages } from '../apis/getMessagesApis';
-
+import { AuthContext } from '../Context/AuthContext';
 const Messages = ({ selectedChat}) => {
+  const {UserID} = useContext(AuthContext);
   const [messages,setMessages] = useState([]);
 useEffect(()=>{
 if(selectedChat){
@@ -19,10 +20,28 @@ const fetchMessages=async(chatId)=>{
 }
   return (
     <>
-    <p>SelectedChatID:{selectedChat}</p>
-{messages.length?(messages.map((messages)=>(<div
-  className='list-group' key={messages._id}><p> {messages.content}</p><p>{messages.senderID.userName}</p></div>))):(<p>Currently you dont't have any message with this user</p>)}
-    </>
+    
+  <p>SelectedChatID: {selectedChat}</p>
+  <div  className='list-group'>
+  {messages.length ? (
+    messages.map((message) => {
+      console.log("selectedChat:", selectedChat);
+      // console.log("message.senderID:", message.senderID);
+      return (
+        
+          <div  key={message._id} style={{ width:"200px",height:"80px",color:"white", margin:"5px",backgroundColor: UserID === message.senderID._id ? 'green' : 'aqua' }}> <p>{message.content}</p>
+          <p style={{color:"black"}}>{message.senderID?.userName}</p>
+          </div>
+         
+      );
+    })
+  ) : (
+    <p>Currently you don't have any messages with this user</p>
+  )}
+
+  </div>
+  
+</>
   )
 }
 

@@ -3,7 +3,7 @@ import { getChat } from '../apis/getChatApis';
 import { AuthContext } from '../Context/AuthContext';
 
 const List = ({ onSelectChat }) => {
-const {UserID} = useContext(AuthContext);
+const {UserID,userName} = useContext(AuthContext);
 const [chat,setChat]= useState([]);
 useEffect(()=>{
   fetchChat()
@@ -33,13 +33,14 @@ const handleChatClick = (chatId,receiverID) => {
 
 {/* Inside the second map function */}
 {chat.map((item) => {
-    console.log('User ID:', UserID);
-    console.log('Sender ID:', item.senderID);
-    console.log('Receiver ID:', item.receiverID?._id);
-    console.log('User Name:', item.receiverID?.userName);
+    console.log('UserID:', UserID);
+    console.log('item.senderID:', item.senderID);
+    console.log('userName:', userName);
+    console.log('item.receiverID?._id:', item.receiverID?._id);
+    console.log('item.receiverID?.userName:', item.receiverID?.userName); 
     
     var isUserInChat =false;
-    isUserInChat= item.senderID === UserID || item.receiverID?._id === UserID;
+    isUserInChat= item.senderID?._id === UserID || item.receiverID?._id === UserID;
     console.log('Is User in Chat:', isUserInChat);
 
     return (
@@ -47,9 +48,10 @@ const handleChatClick = (chatId,receiverID) => {
             <li
                 key={item._id}
                 className="list-group-item"
-                onClick={() => handleChatClick(item._id, item.receiverID)}
+                //its send the chat's ID and receiverID or senderID to 'Chat' component according to comparison  
+                onClick={() => handleChatClick(item._id, UserID===item.senderID?._id?  item.receiverID?._id: item.senderID?._id)}
             >
-                {item.receiverID?.userName || 'Unknown User'}
+                {item.senderID._id===UserID? item.receiverID?.userName:item.senderID?.userName }
             </li>
         )
     );
