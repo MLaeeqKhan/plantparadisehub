@@ -1,9 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { getMessages } from '../apis/getMessagesApis';
 import { AuthContext } from '../Context/AuthContext';
+
+import io from 'socket.io-client';
+const ENDPOINT ="http://localhost:5000";
+var socketClient, selectedChatCompare;
+
 const Messages = ({ selectedChat}) => {
-  const {UserID} = useContext(AuthContext);
+  const {UserID,user} = useContext(AuthContext);
   const [messages,setMessages] = useState([]);
+  const [socketConnected, setSocketConnected] = useState(false);
 useEffect(()=>{
 if(selectedChat){
 fetchMessages(selectedChat);
@@ -18,6 +24,16 @@ const fetchMessages=async(chatId)=>{
  
   }
 }
+useEffect(()=>{
+  console.log("user:",user);
+  if(user){
+    socketClient = io(ENDPOINT);
+    socketClient.emit('setup', user);
+    socketClient.on('connectecd', () => setSocketConnected(true));
+  }
+  
+ 
+},[])
   return (
     <>
     

@@ -7,10 +7,12 @@ const AuthProvider = ({ children }) => {
   const [UserID, setUserID] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
+  const [user,setUser] = useState(null);
 
   
 
 const setUserData=(data)=>{
+  setUser(data);
  setToken(data.token || "");
       setUserID(data._id || "");
       setUserEmail(data.email || "");
@@ -41,7 +43,7 @@ const setUserData=(data)=>{
   };
 
   return (
-    <AuthContext.Provider value={{ token, setUserToken, UserID, userEmail,userName, logoutUser }}>
+    <AuthContext.Provider value={{ token,user, setUserToken, UserID, userEmail,userName, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );
