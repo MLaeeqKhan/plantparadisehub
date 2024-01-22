@@ -1,64 +1,190 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { getMessages } from '../apis/getMessagesApis';
-import { AuthContext } from '../Context/AuthContext';
+//Messages.js file
+import React, { useContext, useEffect, useState ,useRef,useReducer} from "react";
+import { getMessages } from "../apis/getMessagesApis";
+import { AuthContext } from "../Context/AuthContext";
 
-import io from 'socket.io-client';
-const ENDPOINT ="http://localhost:5000";
+import io from "socket.io-client";
+const ENDPOINT = "http://localhost:5000";
 var socketClient, selectedChatCompare;
 
-const Messages = ({ selectedChat}) => {
-  const {UserID,user} = useContext(AuthContext);
-  const [messages,setMessages] = useState([]);
+const Messages = ({ selectedChat, receiver }) => {
+  const messagesRef = useRef(null);
+
+  // console.log("selectedChat:",selectedChat);
+  const { UserID, user } = useContext(AuthContext);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState({content:""});
+  const [upDateReceiver,setUpDateReceiver]= useState();
+
   const [socketConnected, setSocketConnected] = useState(false);
-useEffect(()=>{
-if(selectedChat){
-fetchMessages(selectedChat);
-}
-},[selectedChat]);
-const fetchMessages=async(chatId)=>{
-  try {
-    const res=await getMessages(chatId);
-    setMessages(res.data.messages);
-  } catch (error) {
-    console.error('Error fetching messages:', error);
- 
+  let name, value;
+  const handleInput=(e)=>{
+    name = e.target.name;
+    value = e.target.value;
+    setMessage({...message,[name]:value});
+  };
+  const postData = async(e)=>{
+    e.preventDefault();
+    const {content} = message;
+    // console.log("upDateReceiver:",upDateReceiver);
+
+    const res = await fetch("http://localhost:5000/sendMessage",{
+      method:"POST",
+      headers:{
+        "content-type": "application/json",
+      },
+      body:JSON.stringify({UserID,upDateReceiver,content})
+      
+  });
+  const response = await res.json();
+  if (socketClient) {
+    socketClient.emit("new message", response.msg,upDateReceiver);
+      fetchMessages(selectedChat.chatId);
   }
-}
-useEffect(()=>{
-  console.log("user:",user);
-  if(user){
+    if(response){
+    setMessage({content:""});
+    // setChat(response);
+    console.log("Chat Responce:",response);
+    // window.alert("Message successfully sended!");
+
+  }
+  else{
+    window.alert("Error in Message sending!");
+  }
+};
+  useEffect(() => {
+    if (selectedChat&& selectedChat.chatId) {
+      fetchMessages(selectedChat.chatId);
+      setUpDateReceiver(selectedChat.receiverID);
+      selectedChatCompare = selectedChat.chatId;
+    }
+  }, [selectedChat]);
+
+  useEffect(() => {
+    // console.log("user:", user);
+    // if(user){
     socketClient = io(ENDPOINT);
-    socketClient.emit('setup', user);
-    socketClient.on('connectecd', () => setSocketConnected(true));
-  }
-  
- 
-},[])
+    // console.log("Socket Client:", socketClient); // Add this line
+    socketClient.emit("setup", user);
+    socketClient.on("connected", () => {    console.log("Socket connected!");
+    setSocketConnected(true)});
+    // }
+    // forceUpdate(); // Trigger a re-render
+
+  }, []);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  useEffect(() => {
+    console.log("selectedChatCompare:", selectedChatCompare)
+    console.log("newMessageRecieved in Messages.js:",messages)
+
+    socketClient.on("message Received", (newMessageRecieved) => {
+      console.log("newMessageRecieved in message Received:", newMessageRecieved);
+      console.log("selectedChatCompare:", selectedChatCompare);
+      console.log("newMessageRecieved.createdChatID:", newMessageRecieved.createdChatID);
+
+
+      if(selectedChat && selectedChat.chatId &&selectedChatCompare === newMessageRecieved.createdChatID)
+      {
+        // window.alert("No notification");
+        console.log("newMessageRecieved in Messages.js:",newMessageRecieved);
+        setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
+        // console.log("messages",messages); 
+          // fetchMessages(selectedChat.chatId);
+          forceUpdate(); // Trigger a re-render
+
+      }
+      else{
+      //give notification
+      console.log("notification");
+      window.alert("notification");
+      }
+    })
+    // return () => {
+    //   // Cleanup on component unmount
+    //   socketClient.off("message Received");
+    // };
+  });
+
+  const fetchMessages = async (chatId) => {
+    try {
+      if(chatId){
+        const res = await getMessages(chatId);
+        socketClient.emit("join chat", chatId);
+        setMessages(res.data.messages);
+        socketClient.emit("join chat", chatId);
+      }
+      
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Scroll to the bottom when messages change
+    messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  }, [messages]);
+  useEffect(() => {
+    if (receiver) {
+      setUpDateReceiver(receiver);
+      // Do something with the receiver information
+      console.log("Receiver in Messages:", receiver);
+    }
+  }, [receiver]);
   return (
     <>
-    
-  <p>SelectedChatID: {selectedChat}</p>
-  <div  className='list-group'>
-  {messages.length ? (
-    messages.map((message) => {
-      console.log("selectedChat:", selectedChat);
-      // console.log("message.senderID:", message.senderID);
-      return (
-        
-          <div  key={message._id} style={{ width:"200px",height:"80px",color:"white", margin:"5px",backgroundColor: UserID === message.senderID._id ? 'green' : 'aqua' }}> <p>{message.content}</p>
-          <p style={{color:"black"}}>{message.senderID?.userName}</p>
-          </div>
-         
-      );
-    })
-  ) : (
-    <p>Currently you don't have any messages with this user</p>
-  )}
+<p>SelectedChatID: {selectedChat && selectedChat.chatId}</p>
+      <div ref={messagesRef} className="list-group" style={{display: "flex", flexDirection: "column"}}>
+        {messages.length ? (
+          messages.map((message) => {
+          
+            return (
+              
+              <div key={message?._id} style={{ alignSelf: UserID === message?.senderID?._id ? "flex-end" : "flex-start" }}>
+              {message?.senderID && (
+                <div
+                  style={{
+                    width: "auto",
+                    height: "auto",
+                    color: "white",
+                    margin: "5px",
+                    borderRadius:"20px",
+                    padding:"5px",
+                    backgroundColor: UserID === message.senderID._id ? "green" : "aqua",
+                    alignSelf: UserID === message.senderID._id ? "flex-end" : "flex-start",
+                  }}
+                >
+                  <p>{message.content}</p>
+                  {/* <p style={{ color: "black" }}>{message.senderID.userName}</p> */}
+                </div>
+              )}
+            </div>
+            
+            
+                
+              
+            );
+          })
+        ) : (
+          <p>Currently you don't have any messages with this user</p>
+        )}
 
-  </div>
-  
-</>
-  )
-}
 
-export default Messages
+      </div>
+      {(selectedChat && selectedChat.receiverID) || receiver?( <div className="texing">
+                  <input
+                    type="text"
+                    onChange={handleInput}
+                    name="content"
+                    value={message.content}
+                  />
+                  <button onClick={postData} type="submit">
+                    Send
+                  </button>
+                </div>):(null)}
+     
+    </>
+  );
+};
+
+export default Messages;

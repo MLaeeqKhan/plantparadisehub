@@ -33,7 +33,7 @@ connection().then(() => {
 
    
     socket.on("setup",(userData)=>{
-      console.log("userData:",userData)
+      // console.log("userData:",userData)
       if(userData && userData._id){
         socket.join(userData._id);
         console.log("userData._id:",userData._id)
@@ -43,9 +43,21 @@ connection().then(() => {
         console.error("Invalid userData:");
       }
     });
+    socket.on("join chat",(room)=>{
+      socket.join(room);
+      console.log("user joined room:"+room);
+    });   
+    
+    socket.on('new message', (newMessageRecieved,upDateReceiver) => {
+      var message = newMessageRecieved;
+      console.log("newMessageRecieved:",newMessageRecieved);
+  console.log("upDateReceiver:",upDateReceiver);
+      if (!message) return console.log("chat not defined");
+  
+        socket.in(upDateReceiver).emit("message Received", message);
+      
+    });
   });
-
- 
 
 }).catch((err)=>{
   console.error("Error connecting to the database:", err);

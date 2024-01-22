@@ -1,3 +1,4 @@
+//List.js file
 import React, { useContext, useEffect, useState } from 'react'
 import { getChat } from '../apis/getChatApis';
 import { AuthContext } from '../Context/AuthContext';
