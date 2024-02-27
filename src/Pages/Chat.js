@@ -13,10 +13,10 @@ const Chat = () => {
   }, [receiver]);
   console.log("Chat.js ReceiverID:", receiver);
   const { UserID } = useContext(AuthContext);
-  console.log("Chat.js SenderID:", UserID);
   const [selectedChat, setSelectedChat] = useState(null);
   const [chatIDReceiver,setChatIDReceiver] = useState(null)
   // setChatIDReceiver({ chatId, receiverID });
+  
 
   const handleSelectChat = (chatId, receiverID) => {
     console.log("receiverID:", receiverID);

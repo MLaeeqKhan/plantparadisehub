@@ -8,6 +8,7 @@ const AuthProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [user,setUser] = useState(null);
+  const [ChatId,setChatId]=useState("");
 
   
 
@@ -41,9 +42,11 @@ const setUserData=(data)=>{
     localStorage.removeItem("userData");
     setToken("");
   };
-
+const notify=(selectChat)=>{
+  setChatId(selectChat);
+}
   return (
-    <AuthContext.Provider value={{ token,user, setUserToken, UserID, userEmail,userName, logoutUser }}>
+    <AuthContext.Provider value={{ token,user, setUserToken, UserID, userEmail,userName, logoutUser,notify,ChatId }}>
       {children}
     </AuthContext.Provider>
   );

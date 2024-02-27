@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../Models/userModel");
 const Chat = require("../Models/chatModel");
 const createdChats = require("../Models/createdChat");
+const Notification = require("../Models/notificationModel");
 
 router.get("/getUsers", async (req, res) => {
   try {
@@ -73,6 +74,20 @@ router.get("/getMessages/:chatId", async(req,res)=>{
   res.status(500).json({error:'Internal Server Error'});
   }
 
+})
+
+router.post("/saveNotification", async(req,res)=>{
+  try {
+    const notifications = req.body; // Assuming req.body is an array of notifications
+
+    // Save notifications to MongoDB
+    await Notification.insertMany(notifications);
+
+    res.status(200).json({ message: 'Notifications saved successfully' });
+  } catch (error) {
+    console.error('Error saving notifications:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 })
 
 module.exports = router;

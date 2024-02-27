@@ -1,5 +1,8 @@
 //Messages.js file
-import React, { useContext, useEffect, useState ,useRef,useReducer} from "react";
+import React, { useContext, useEffect, useState ,useRef} from "react";
+import {  useDispatch } from 'react-redux';
+import { setNotification } from '../Redux/action';
+
 import { getMessages } from "../apis/getMessagesApis";
 import { AuthContext } from "../Context/AuthContext";
 
@@ -9,13 +12,13 @@ var socketClient, selectedChatCompare;
 
 const Messages = ({ selectedChat, receiver }) => {
   const messagesRef = useRef(null);
+  const dispatch = useDispatch();
 
-  // console.log("selectedChat:",selectedChat);
   const { UserID, user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState({content:""});
   const [upDateReceiver,setUpDateReceiver]= useState();
-
+  
   const [socketConnected, setSocketConnected] = useState(false);
   let name, value;
   const handleInput=(e)=>{
@@ -61,51 +64,14 @@ const Messages = ({ selectedChat, receiver }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    // console.log("user:", user);
-    // if(user){
     socketClient = io(ENDPOINT);
-    // console.log("Socket Client:", socketClient); // Add this line
     socketClient.emit("setup", user);
     socketClient.on("connected", () => {    console.log("Socket connected!");
     setSocketConnected(true)});
-    // }
-    // forceUpdate(); // Trigger a re-render
 
-  }, []);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  }, [user]);
 
-  useEffect(() => {
-    console.log("selectedChatCompare:", selectedChatCompare)
-    console.log("newMessageRecieved in Messages.js:",messages)
-
-    socketClient.on("message Received", (newMessageRecieved) => {
-      console.log("newMessageRecieved in message Received:", newMessageRecieved);
-      console.log("selectedChatCompare:", selectedChatCompare);
-      console.log("newMessageRecieved.createdChatID:", newMessageRecieved.createdChatID);
-
-
-      if(selectedChat && selectedChat.chatId &&selectedChatCompare === newMessageRecieved.createdChatID)
-      {
-        // window.alert("No notification");
-        console.log("newMessageRecieved in Messages.js:",newMessageRecieved);
-        setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
-        // console.log("messages",messages); 
-          // fetchMessages(selectedChat.chatId);
-          forceUpdate(); // Trigger a re-render
-
-      }
-      else{
-      //give notification
-      console.log("notification");
-      window.alert("notification");
-      }
-    })
-    // return () => {
-    //   // Cleanup on component unmount
-    //   socketClient.off("message Received");
-    // };
-  });
-
+ 
   const fetchMessages = async (chatId) => {
     try {
       if(chatId){
@@ -121,16 +87,28 @@ const Messages = ({ selectedChat, receiver }) => {
   };
 
   useEffect(() => {
-    // Scroll to the bottom when messages change
+    socketClient.on("message Received", (newMessageRecieved) => {
+      if(selectedChat && selectedChat.chatId && selectedChatCompare === newMessageRecieved.createdChatID)
+      {
+        console.log("newMessageRecieved in Messages.js:",newMessageRecieved);
+        setMessages([...messages, newMessageRecieved]);
+      }
+      else if(selectedChatCompare!==newMessageRecieved.createdChatID){
+        console.log("  notification");
+        dispatch(setNotification(newMessageRecieved));      // window.alert("hi notification");
+      }
+    });
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-  }, [messages]);
+  }, [messages,selectedChat]);
   useEffect(() => {
     if (receiver) {
       setUpDateReceiver(receiver);
-      // Do something with the receiver information
       console.log("Receiver in Messages:", receiver);
     }
   }, [receiver]);
+
+
+  
   return (
     <>
 <p>SelectedChatID: {selectedChat && selectedChat.chatId}</p>
