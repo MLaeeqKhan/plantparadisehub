@@ -1,37 +1,52 @@
 //List.js file
 import React, { useContext, useEffect, useState } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getChat } from "../apis/getChatApis";
 import { AuthContext } from "../Context/AuthContext";
-import { removeNotification } from "../Redux/action";
+import { getNotification } from "../apis/getNotificationsApis";
+import { setNotification } from "../Redux/action";
 const List = ({ onSelectChat }) => {
-  const { UserID, ChatId } = useContext(AuthContext);
-  const notifications = useSelector((state) => state.notifications);
-  console.log("Notifications:", notifications);
+  const { UserID } = useContext(AuthContext);
   const dispatch = useDispatch();
+  const notifications = useSelector((state) => state.notifications);
   const [chat, setChat] = useState([]);
   useEffect(() => {
     fetchChat();
+    fetchNotification();
   }, []);
   const fetchChat = async () => {
     const res = await getChat();
     setChat(res.data.chat);
     // console.log(chat);
   };
-
-  useEffect(() => {
-    // setNotification(ChatId);
-  }, [ChatId]);
-
+  const fetchNotification = async () => {
+    try {
+      const notification = await getNotification();
+      console.log(
+        "notification.data.notifications",
+        notification.data.notifications
+      );
+      dispatch(setNotification(notification.data.notifications));
+    } catch (error) {
+      console.error("Error in fetching Notifications", error);
+    }
+  };
   const handleChatClick = (chatId, receiverID) => {
     onSelectChat(chatId, receiverID);
-    dispatch(removeNotification(chatId))  };
+    // dispatch(removeNotification(chatId));
+  };
 
   return (
     <>
       {chat.length ? (
         <ul className="list-group">
           {chat.map((item) => {
+            const count = notifications.filter(
+              (notification) =>
+                notification.createdChatID === item._id &&
+                notification.senderID !== UserID
+            ).length;
+
             var isUserInChat = false;
             isUserInChat =
               item.senderID?._id === UserID || item.receiverID?._id === UserID;
@@ -51,20 +66,13 @@ const List = ({ onSelectChat }) => {
                     )
                   }
                 >
-                  {/* {console.log("item._id:", item._id)}
-                  {console.log(
-                    "notifications.createdChatID:",
-                    notifications.createdChatID
-                  )} */}
                   {item.senderID._id === UserID
                     ? item.receiverID?.userName
                     : item.senderID?.userName}
-                  {notifications.map(
-                    (notification) =>
-                      notification.createdChatID === item._id && (
-                        <span key={notification._id}>Notification</span>
-                      )
-                  )}{" "}
+                  {notifications.some(
+                    (notification) => notification.senderID !== UserID
+                  ) &&
+                    count > 0 && <span>{count}</span>}
                 </li>
               )
             );

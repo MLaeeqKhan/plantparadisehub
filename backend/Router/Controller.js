@@ -90,4 +90,14 @@ router.post("/saveNotification", async(req,res)=>{
   }
 })
 
+router.get("/getNotification", async (req, res) => {
+  try {
+    const notifications = await Notification.find();
+    res.json({ notifications });
+  } catch (error) {
+    console.log("Controller Notification Error:", error);
+    res.send(error);
+  }
+});
+
 module.exports = router;

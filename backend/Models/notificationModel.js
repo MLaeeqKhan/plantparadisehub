@@ -1,3 +1,4 @@
+// NotificationModel
 const mongoose=require("mongoose");
 // Define Notification Schema
 const notificationSchema = new mongoose.Schema({
