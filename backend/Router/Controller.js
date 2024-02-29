@@ -76,6 +76,18 @@ router.get("/getMessages/:chatId", async(req,res)=>{
 
 })
 
+router.get("/getAllMessages", async(req,res)=>{
+  try {
+    const messages = await Chat.find();
+    res.status(200).json({messages});
+
+  } catch (error) {
+    console.error("Error Fetching messages:", error);
+  res.status(500).json({error:'Internal Server Error'});
+  }
+
+})
+
 router.post("/saveNotification", async(req,res)=>{
   try {
     const notifications = req.body; // Assuming req.body is an array of notifications
@@ -99,5 +111,17 @@ router.get("/getNotification", async (req, res) => {
     res.send(error);
   }
 });
+
+router.delete('/deleteNotification/:chatId',async(req,res)=>{
+  try {
+    const {chatId}= req.params;
+  const deleteNotification=await Notification.deleteMany({createdChatID:chatId});
+  res.status(200).json({message:"Notifications deleted successfully",deleteNotification});
+  } catch (error) {
+    console.error('Error deleting notifications:',error);
+    res.status(500).json({error:'Internal server error in deleting notifications'});
+  }
+  
+})
 
 module.exports = router;

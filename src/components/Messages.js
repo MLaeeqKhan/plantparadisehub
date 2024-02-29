@@ -1,10 +1,13 @@
 //Messages.js file
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { setNotification } from "../Redux/action";
+import { useDispatch,useSelector } from "react-redux";
+import { setNotification,setLastMessage } from "../Redux/action";
 
 import { getMessages } from "../apis/getMessagesApis";
+import { getAllMessages } from "../apis/getAllMessagesApis";
+
 import { AuthContext } from "../Context/AuthContext";
+
 
 import io from "socket.io-client";
 import { getNotification } from "../apis/getNotificationsApis";
@@ -14,6 +17,8 @@ var socketClient, selectedChatCompare;
 const Messages = ({ selectedChat, receiver }) => {
   const messagesRef = useRef(null);
   const dispatch = useDispatch();
+  const latestMessage = useSelector((state) => state.lastMessage);
+
 
   const { UserID, user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
@@ -42,6 +47,8 @@ const Messages = ({ selectedChat, receiver }) => {
     if (socketClient) {
       socketClient.emit("new message", response.msg, upDateReceiver);
       fetchMessages(selectedChat.chatId);
+      fetchAllMessagges();
+
     }
     if (response) {
       setMessage({ content: "" });
@@ -74,6 +81,9 @@ const Messages = ({ selectedChat, receiver }) => {
       setUpDateReceiver(selectedChat.receiverID);
       selectedChatCompare = selectedChat.chatId;
       fetchNotification();
+      fetchAllMessagges();
+
+
     }
   }, [selectedChat]);
 
@@ -98,13 +108,23 @@ const Messages = ({ selectedChat, receiver }) => {
       console.error("Error fetching messages:", error);
     }
   };
+  const fetchAllMessagges = async () => {
+    try {
+      const allMessages = await getAllMessages();
+      dispatch(setLastMessage(allMessages.data.messages));
+
+      // setAllMsg(allMessages.data.messages);
+    } catch (error) {
+      console.error("Error in fetching allMessages", error);
+    }
+  };
   const fetchNotification = async () => {
     try {
       const notification = await getNotification();
-      console.log(
-        "notification.data.notifications",
-        notification.data.notifications
-      );
+      // console.log(
+      //   "notification.data.notifications",
+      //   notification.data.notifications
+      // );
       dispatch(setNotification(notification.data.notifications));
     } catch (error) {
       console.error("Error in fetching Notifications",error);
@@ -124,6 +144,8 @@ const Messages = ({ selectedChat, receiver }) => {
         // dispatch(setNotification(newMessageRecieved));
         postNotification(newMessageRecieved);
         fetchNotification();
+        fetchAllMessagges();
+
       }
     });
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;

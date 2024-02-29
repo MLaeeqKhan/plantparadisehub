@@ -2,22 +2,40 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getChat } from "../apis/getChatApis";
+import { getAllMessages } from "../apis/getAllMessagesApis";
+
 import { AuthContext } from "../Context/AuthContext";
 import { getNotification } from "../apis/getNotificationsApis";
-import { setNotification } from "../Redux/action";
+import { removeNotification } from "../apis/removeNotificationApis";
+import { setLastMessage, setNotification } from "../Redux/action";
+
 const List = ({ onSelectChat }) => {
   const { UserID } = useContext(AuthContext);
   const dispatch = useDispatch();
   const notifications = useSelector((state) => state.notifications);
+  const latestMsg = useSelector((state) => state.lastMessage);
+
   const [chat, setChat] = useState([]);
+  // const [allMsg, setAllMsg] = useState([]);
   useEffect(() => {
     fetchChat();
+    fetchAllMessagges();
     fetchNotification();
   }, []);
   const fetchChat = async () => {
     const res = await getChat();
     setChat(res.data.chat);
     // console.log(chat);
+  };
+  const fetchAllMessagges = async () => {
+    try {
+      const allMessages = await getAllMessages();
+      dispatch(setLastMessage(allMessages.data.messages));
+
+      // setAllMsg(allMessages.data.messages);
+    } catch (error) {
+      console.error("Error in fetching allMessages", error);
+    }
   };
   const fetchNotification = async () => {
     try {
@@ -33,9 +51,11 @@ const List = ({ onSelectChat }) => {
   };
   const handleChatClick = (chatId, receiverID) => {
     onSelectChat(chatId, receiverID);
-    // dispatch(removeNotification(chatId));
+    deleteNotification(chatId);
   };
-
+  const deleteNotification = (chatId) => {
+    removeNotification(chatId);
+  };
   return (
     <>
       {chat.length ? (
@@ -46,7 +66,9 @@ const List = ({ onSelectChat }) => {
                 notification.createdChatID === item._id &&
                 notification.senderID !== UserID
             ).length;
-
+            const lastMessage = latestMsg
+              .filter((msg) => msg.createdChatID === item._id)
+              .pop();
             var isUserInChat = false;
             isUserInChat =
               item.senderID?._id === UserID || item.receiverID?._id === UserID;
@@ -69,10 +91,15 @@ const List = ({ onSelectChat }) => {
                   {item.senderID._id === UserID
                     ? item.receiverID?.userName
                     : item.senderID?.userName}
+                  <span className="lastMessage">
+                    {" "}
+                    {lastMessage && lastMessage.content}
+                  </span>
+                  {/* if some notifications not have the same senderID and UserID then its show the notification */}
                   {notifications.some(
                     (notification) => notification.senderID !== UserID
                   ) &&
-                    count > 0 && <span>{count}</span>}
+                    count > 0 && <span className="count">{count}</span>}
                 </li>
               )
             );
