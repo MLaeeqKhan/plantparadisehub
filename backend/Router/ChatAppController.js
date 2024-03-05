@@ -2,10 +2,10 @@
 
 const express = require("express");
 const router = express.Router();
-const User = require("../Models/userModel");
-const Chat = require("../Models/chatModel");
-const createdChats = require("../Models/createdChat");
-const Notification = require("../Models/notificationModel");
+const User = require("../Models/ChatModels/userModel");
+const Chat = require("../Models/ChatModels/chatModel");
+const createdChats = require("../Models/ChatModels/createdChat");
+const Notification = require("../Models/ChatModels/notificationModel");
 
 router.get("/getUsers", async (req, res) => {
   try {

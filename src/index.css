@@ -38,6 +38,16 @@ code {
   overflow-y: auto;
   
 }
+.lastMessageCount{
+  display: flex;
+}
+.count{
+  background-color: cadetblue;
+  width: 20px;
+  height: 25px;
+  border-radius:5px ;
+  margin: 10px;
+}
 
 /* Add any other styling as needed */
 

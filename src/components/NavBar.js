@@ -23,6 +23,9 @@ const NavBar = () => {
         <li className="nav-item">
           <Link className="nav-link active" aria-current="page" to="/">Home</Link>
         </li>
+        <li className="nav-item">
+          <Link className="nav-link active" aria-current="page" to="/Forum">Forum</Link>
+        </li>
         {token?(<><button onClick={handleLogout}>Logout</button>
        
        </>):(<> <li className="nav-item">

@@ -1,12 +1,12 @@
 //List.js file
 import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getChat } from "../apis/getChatApis";
-import { getAllMessages } from "../apis/getAllMessagesApis";
+import { getChat } from "../apis/ChatApis/getChatApis";
+import { getAllMessages } from "../apis/ChatApis/getAllMessagesApis";
 
 import { AuthContext } from "../Context/AuthContext";
-import { getNotification } from "../apis/getNotificationsApis";
-import { removeNotification } from "../apis/removeNotificationApis";
+import { getNotification } from "../apis/ChatApis/getNotificationsApis";
+import { removeNotification } from "../apis/ChatApis/removeNotificationApis";
 import { setLastMessage, setNotification } from "../Redux/action";
 
 const List = ({ onSelectChat }) => {
@@ -91,6 +91,8 @@ const List = ({ onSelectChat }) => {
                   {item.senderID._id === UserID
                     ? item.receiverID?.userName
                     : item.senderID?.userName}
+                    <div>
+                      <div className="lastMessageCount">
                   <span className="lastMessage">
                     {" "}
                     {lastMessage && lastMessage.content}
@@ -99,7 +101,9 @@ const List = ({ onSelectChat }) => {
                   {notifications.some(
                     (notification) => notification.senderID !== UserID
                   ) &&
-                    count > 0 && <span className="count">{count}</span>}
+                    count > 0 && <div className="count">{count}</div>}
+                    </div>
+                    </div>
                 </li>
               )
             );

@@ -1,7 +1,7 @@
 // Venders.js file
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getUser } from '../apis/getUserApis';
+import { getUser } from '../apis/ChatApis/getUserApis';
 
 const Venders = () => {
   const [users, setUsers] = useState([]);

@@ -5,12 +5,14 @@ import Home from "./Pages/Home";
 import NavBar from "./components/NavBar";
 import Chat from "./Pages/Chat";
 import Venders from "./Pages/Venders";
+import Forum from "./Pages/Forum";
 function App() {
   return (
    <Router>
 <NavBar/>
 <Routes>
   <Route exact path="/" element={<Home/>} />
+  <Route exact path="/Forum" element={<Forum/>}/>
   <Route exact path="/SignUp" element={<SignUp/>}/>
   <Route exact path="/Login" element ={<Login/>}/>
   <Route exact path="/Chat/:receiverID" element={<Chat/>}/>

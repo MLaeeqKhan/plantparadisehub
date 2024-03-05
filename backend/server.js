@@ -10,12 +10,14 @@ const cors = require("cors");
 
 console.log("hello from  server.js");
 const authRouter = require("./Router/auth");
-const controllerRouter = require("./Router/Controller");
-const { Socket } = require("socket.io");
-const User = require("./Models/userModel");
+const ChatAppcontrollerRouter = require("./Router/ChatAppController");
+const ForumControllerRouter = require("./Router/ForumController");
+// const { Socket } = require("socket.io");
+// const User = require("./Models/ChatModels/userModel");
 app.use(cors());
 app.use("/", authRouter);
-app.use("/", controllerRouter); 
+app.use("/", ChatAppcontrollerRouter); 
+app.use("/", ForumControllerRouter);
 
 connection().then(() => {
  const server= app.listen(PORT, () => {

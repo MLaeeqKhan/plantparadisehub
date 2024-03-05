@@ -3,7 +3,7 @@
 const express = require("express");
 const router = express.Router();
 require("../DB/conn");
-const User = require("../Models/userModel");
+const User = require("../Models/ChatModels/userModel");
 const generateToken = require("../Middleware/generateToken");
 
 router.use(express.json());

@@ -3,14 +3,14 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { setNotification,setLastMessage } from "../Redux/action";
 
-import { getMessages } from "../apis/getMessagesApis";
-import { getAllMessages } from "../apis/getAllMessagesApis";
+import { getMessages } from "../apis/ChatApis/getMessagesApis";
+import { getAllMessages } from "../apis/ChatApis/getAllMessagesApis";
 
 import { AuthContext } from "../Context/AuthContext";
 
 
 import io from "socket.io-client";
-import { getNotification } from "../apis/getNotificationsApis";
+import { getNotification } from "../apis/ChatApis/getNotificationsApis";
 const ENDPOINT = "http://localhost:5000";
 var socketClient, selectedChatCompare;
 
