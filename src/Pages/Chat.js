@@ -3,24 +3,23 @@ import React, { useContext, useEffect, useState } from "react";
 import List from "../components/List";
 import Messages from "../components/Messages";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../Context/AuthContext";
+import { useDispatch } from "react-redux";
+import { setReceiverId } from "../Redux/action";
 
 const Chat = () => {
   const params = useParams();
   const receiver = params.receiverID;
+  const dispatch = useDispatch();
+  dispatch(setReceiverId(receiver));
   useEffect(() => {
     console.log("receiverID:", receiver);
   }, [receiver]);
   console.log("Chat.js ReceiverID:", receiver);
-  const { UserID } = useContext(AuthContext);
   const [selectedChat, setSelectedChat] = useState(null);
-  const [chatIDReceiver,setChatIDReceiver] = useState(null)
-  // setChatIDReceiver({ chatId, receiverID });
   
 
-  const handleSelectChat = (chatId, receiverID) => {
-    console.log("receiverID:", receiverID);
-    setSelectedChat({ chatId, receiverID });
+  const handleSelectChat = (chatId) => {
+    setSelectedChat( chatId );
   };
   return (
     <>
@@ -32,7 +31,7 @@ const Chat = () => {
           <div className="col-2 chat-container">
             <div className="list-group">
               {" "}
-              <Messages selectedChat={selectedChat} receiver={receiver} />
+              <Messages selectedChat={selectedChat}/>
             </div>
           </div>
         </div>
