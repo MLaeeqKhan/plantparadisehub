@@ -29,12 +29,12 @@ router.get("/getChats", async (req, res) => {
 });
 
 router.post("/sendMessage", async (req, res) => {
-  const { UserID, upDateReceiver, content } = req.body;
+  const { UserID, receiverId, content } = req.body;
   try {
     const chat = await createdChats.findOne({
       $or: [
-        { senderID: UserID, receiverID: upDateReceiver },
-        { senderID: upDateReceiver, receiverID: UserID },
+        { senderID: UserID, receiverID: receiverId },
+        { senderID: receiverId, receiverID: UserID },
       ],
     });
     if (chat) {
@@ -47,7 +47,7 @@ router.post("/sendMessage", async (req, res) => {
       await msg.save();
       res.status(200).json({ msg });
     } else {
-      const newChat = new createdChats({ senderID:UserID, receiverID:upDateReceiver });
+      const newChat = new createdChats({ senderID:UserID, receiverID:receiverId });
       await newChat.save();
       let chatID = newChat._id;
       const msg = new Chat({
