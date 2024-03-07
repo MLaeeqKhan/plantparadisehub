@@ -14,16 +14,17 @@ import { getNotification } from "../apis/ChatApis/getNotificationsApis";
 const ENDPOINT = "http://localhost:5000";
 var socketClient, selectedChatCompare;
 
-const Messages = ({ selectedChat, receiver }) => {
+const Messages = ({ selectedChat }) => {
   const messagesRef = useRef(null);
   const dispatch = useDispatch();
-  const latestMessage = useSelector((state) => state.lastMessage);
-
+  // const latestMessage = useSelector((state) => state.lastMessage);
+  const receiverId = useSelector((state)=>state.receiverId)
+console.log("Message.js receiverID:",receiverId);
 
   const { UserID, user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState({ content: "" });
-  const [upDateReceiver, setUpDateReceiver] = useState();
+  // const [upDateReceiver, setUpDateReceiver] = useState();
 
   const [socketConnected, setSocketConnected] = useState(false);
   let name, value;
@@ -35,18 +36,22 @@ const Messages = ({ selectedChat, receiver }) => {
   const postData = async (e) => {
     e.preventDefault();
     const { content } = message;
+    console.log("postData receiverID:",receiverId);
 
     const res = await fetch("http://localhost:5000/sendMessage", {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({ UserID, upDateReceiver, content }),
+      
+      body: JSON.stringify({ UserID, receiverId, content }),
     });
     const response = await res.json();
     if (socketClient) {
-      socketClient.emit("new message", response.msg, upDateReceiver);
-      fetchMessages(selectedChat.chatId);
+      console.log("socketClient receiverID:",receiverId);
+
+      socketClient.emit("new message", response.msg, receiverId);
+      fetchMessages(selectedChat);
       fetchAllMessagges();
 
     }
@@ -76,10 +81,10 @@ const Messages = ({ selectedChat, receiver }) => {
       });
   };
   useEffect(() => {
-    if (selectedChat && selectedChat.chatId) {
-      fetchMessages(selectedChat.chatId);
-      setUpDateReceiver(selectedChat.receiverID);
-      selectedChatCompare = selectedChat.chatId;
+    if (selectedChat) {
+      fetchMessages(selectedChat);
+      // setUpDateReceiver(selectedChat);
+      selectedChatCompare = selectedChat;
       fetchNotification();
       fetchAllMessagges();
 
@@ -134,11 +139,12 @@ const Messages = ({ selectedChat, receiver }) => {
     socketClient.on("message Received", (newMessageRecieved) => {
       if (
         selectedChat &&
-        selectedChat.chatId &&
         selectedChatCompare === newMessageRecieved.createdChatID
       ) {
         console.log("newMessageRecieved in Messages.js:", newMessageRecieved);
         setMessages([...messages, newMessageRecieved]);
+        fetchAllMessagges();
+
       } else if (selectedChatCompare !== newMessageRecieved.createdChatID) {
         console.log("  notification");
         // dispatch(setNotification(newMessageRecieved));
@@ -150,22 +156,17 @@ const Messages = ({ selectedChat, receiver }) => {
     });
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, [messages, selectedChat]);
-  useEffect(() => {
-    if (receiver) {
-      setUpDateReceiver(receiver);
-      console.log("Receiver in Messages:", receiver);
-    }
-  }, [receiver]);
+ 
 
   return (
     <>
-      <p>SelectedChatID: {selectedChat && selectedChat.chatId}</p>
+      <p>SelectedChatID: {selectedChat}</p>
       <div
         ref={messagesRef}
         className="list-group"
         style={{ display: "flex", flexDirection: "column" }}
       >
-        {messages.length ? (
+        {messages && messages.length ? (
           messages.map((message) => {
             return (
               <div
@@ -205,7 +206,7 @@ const Messages = ({ selectedChat, receiver }) => {
           <p>Currently you don't have any messages with this user</p>
         )}
       </div>
-      {(selectedChat && selectedChat.receiverID) || receiver ? (
+      {selectedChat || receiverId ? (
         <div className="texing">
           <input
             type="text"
