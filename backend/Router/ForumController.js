@@ -185,10 +185,60 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// module.exports = {
-//   // ...
-//   updateProfile,
-// };
+// Multer configuration
+const multer = require("multer");
+const path = require("path");
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/assets"); // Set the destination folder for uploaded files
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + extension); // Set the file name for uploaded files
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
+
+router.post("/postQuestion", upload.single("plantImg"), async (req, res) => {
+  console.log("postQuestion");
+  const {
+    questionTile,
+    questionDesc,
+    UserID,
+  } = req.body;
+  const plantImg = req.file.filename;
+  try {
+    const question = new threads({
+      plantImg: plantImg,
+      questionTile:questionTile,
+      questionDesc:questionDesc,
+      userID:UserID
+    });
+    const savedQuestion = await question.save();
+    if (savedQuestion) {
+      res.status(200).json({ message: "You Posted a Question Successfully!" });
+    } else {
+      res.status(400).json({ message: "Error in Posting dQuestion!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.get("/getQuestion", async (req, res) => {
+  try {
+    const questions = await threads.find(); 
+    res.json({ questions });
+  } catch (error) {
+    console.log("error", error);
+    res.send(error);
+  }
+});
 
 
 module.exports = router;

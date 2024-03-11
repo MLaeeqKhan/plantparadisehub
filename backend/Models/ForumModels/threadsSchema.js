@@ -2,14 +2,16 @@
 const mongoose = require('mongoose');
 
 const threadsSchema= new mongoose.Schema({
-    threadTile:{
+    plantImg:{
         type:String,
         required:true
     },
-    date:{
-        type : Date, default: Date.now
+    questionTile:{
+        type:String,
+        required:true
     },
-    threadDesc:{
+   
+    questionDesc:{
         type:String,
         required:true
     },
@@ -17,7 +19,10 @@ const threadsSchema= new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'USER',
         required: true
-      }
+      } ,
+      date:{
+        type : Date, default: Date.now
+    },
       
     
 })

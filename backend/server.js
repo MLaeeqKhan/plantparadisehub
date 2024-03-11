@@ -18,6 +18,8 @@ app.use(cors());
 app.use("/", authRouter);
 app.use("/", ChatAppcontrollerRouter); 
 app.use("/", ForumControllerRouter);
+app.use('/public',express.static('public'));
+
 
 connection().then(() => {
  const server= app.listen(PORT, () => {

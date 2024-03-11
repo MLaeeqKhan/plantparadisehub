@@ -1,13 +1,15 @@
 import React from 'react'
-import ThreadList from '../components/ThreadList';
+import PostQuestion from '../components/PostQuestion';
+import QuestionList from '../components/QuestionsList';
 
 const Forum = () => {
   return (
     <>
       <h1>Forum</h1>
-      <ThreadList/>
+      <PostQuestion/>
+      <QuestionList/>
     </>
   )
 }
 
-export default Forum
+export default Forum;
