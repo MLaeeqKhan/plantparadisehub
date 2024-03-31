@@ -15,7 +15,7 @@ const ForumControllerRouter = require("./Router/ForumController");
 
 app.use(cors({
   origin:["app.use(cors({
-  origin:["https://plantparadisehub-2mefep4oz-laeeq-khans-projects.vercel.app"],
+  origin:["https://plantparadisehub.vercel.app/"],
   methods:["POST", "GET"],
   credentials:true
 }));"],
