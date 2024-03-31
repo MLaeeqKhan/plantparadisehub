@@ -18,7 +18,7 @@ const SignUp = () => {
   const postData = async (e) => {
     e.preventDefault();
     const { userName, email, pass, cPass } = user;
-    const res = await fetch("https://plantparadisehub.vercel.app//signup", {
+    const res = await fetch("https://plantparadisehub.vercel.app/", {
       method: "POST",
       headers: {
         "content-type": "application/json",
