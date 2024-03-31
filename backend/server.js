@@ -12,9 +12,12 @@ console.log("hello from  server.js");
 const authRouter = require("./Router/auth");
 const ChatAppcontrollerRouter = require("./Router/ChatAppController");
 const ForumControllerRouter = require("./Router/ForumController");
-// const { Socket } = require("socket.io");
-// const User = require("./Models/ChatModels/userModel");
-app.use(cors());
+
+app.use(cors({
+  origin:["https:deploy-lwhq.vercel.app"],
+  methods:["POST", "GET"],
+  credentials:true
+}));
 app.use("/", authRouter);
 app.use("/", ChatAppcontrollerRouter); 
 app.use("/", ForumControllerRouter);
@@ -37,7 +40,6 @@ connection().then(() => {
 
    
     socket.on("setup",(userData)=>{
-      // console.log("userData:",userData)
       if(userData && userData._id){
         socket.join(userData._id);
         console.log("userData._id:",userData._id)

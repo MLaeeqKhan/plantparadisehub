@@ -1,26 +1,33 @@
 import React from 'react'
 import { getQuestion } from '../apis/ForumApis/getQuestionsApis';
 import { deleteQuestion } from '../apis/ForumApis/QuestionDeleteApis';
+import UpdateQuestion from "../components/UpdateQuestion"
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-const QuestionsList = () => {
+const YourPosts = () => {
     const [questions, setQuestion] = useState([]);
-const imgPath=`http://localhost:5000/public/assets/`;
-    useEffect(() => {
-        fetchQuestions();
-    }, [])
-    const fetchQuestions = async () => {
-        const questions = await getQuestion(); 
-        setQuestion(questions.data.questions);
+    const [selectedQuestionId, setSelectedQuestionId] = useState(null);
 
-    }
-    const questionDelete=async(questionId)=>{
-        deleteQuestion(questionId);
-    }
-    return (
-        <>
-        <div className='outer'>
+    const imgPath=`http://localhost:5000/public/assets/`;
+        useEffect(() => {
+            fetchQuestions();
+        }, [])
+        const fetchQuestions = async () => {
+            const questions = await getQuestion(); 
+            setQuestion(questions.data.questions);
+    
+        }
+        const questionDelete=async(questionId)=>{
+            deleteQuestion(questionId);
+        }
+        const handleUpdateClick = (id) => {
+            setSelectedQuestionId(id);
+          };
+       
+  return (
+    <>
+     <div className='outer'>
             {questions.length > 0 ? (questions.map((question) => <div className='questions' key={question._id}>
                <div className='inner'>
                 <img
@@ -35,11 +42,13 @@ const imgPath=`http://localhost:5000/public/assets/`;
                 <div className='list'>{question.questionTile}</div>
                 <div className='list'>{question.questionDesc.substring(0,100)}</div>
                 <div className='list'>{question.date}</div>
-                <button>Update</button>
+                <button onClick={() => handleUpdateClick(question._id)}>Update</button>
                 <button onClick={()=>questionDelete(question._id)}>Delete</button></div>
             </div>)) : (<p>Questions not exists! </p>)}</div>
-        </>
-    )
+            {selectedQuestionId && <UpdateQuestion questionId={selectedQuestionId} />}
+
+    </>
+  )
 }
 
-export default QuestionsList
+export default YourPosts

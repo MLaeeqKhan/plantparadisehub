@@ -103,19 +103,19 @@ router.get('/search', async (req, res) => {
 
 
 
-router.put("/updateThread/:id", async (req, res) => {
-  const { id } = req.params;
-  const { threadTitle, threadDesc } = req.body;
+router.put("/updateQuestion/:id", async (req, res) => {
+  const { id } = req.params; 
+  const { questionTitle, questionDesc } = req.body;
   try {
     let updateFields = {};
-    if (threadTitle) {
-      updateFields.threadTile = threadTitle;
+    if (questionTitle) {
+      updateFields.questionTile = questionTitle;
     }
-    if (threadDesc) {
-      updateFields.threadDesc = threadDesc;
+    if (questionDesc) {
+      updateFields.questionDesc = questionDesc;
     }
-    const updatedThread = await threads.findByIdAndUpdate(id, updateFields, { new: true });
-    res.json({ thread: updatedThread });
+    const updatedQuestion = await threads.findByIdAndUpdate(id, updateFields, { new: true });
+    res.json({ question: updatedQuestion });
   } catch (error) {
     console.log("error", error);
     res.send(error);

@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar";
 import Chat from "./Pages/Chat";
 import Venders from "./Pages/Venders";
 import Forum from "./Pages/Forum";
+import YourPosts from "./Pages/YourPosts";
 function App() {
   return (
    <Router>
@@ -13,6 +14,7 @@ function App() {
 <Routes>
   <Route exact path="/" element={<Home/>} />
   <Route exact path="/Forum" element={<Forum/>}/>
+  <Route exact path="/YourPosts" element={<YourPosts/>}/>
   <Route exact path="/SignUp" element={<SignUp/>}/>
   <Route exact path="/Login" element ={<Login/>}/>
   <Route exact path="/Chat/:receiverID" element={<Chat/>}/>
