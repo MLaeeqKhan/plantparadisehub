@@ -14,7 +14,11 @@ const ChatAppcontrollerRouter = require("./Router/ChatAppController");
 const ForumControllerRouter = require("./Router/ForumController");
 
 app.use(cors({
-  origin:["https:deploy-lwhq.vercel.app"],
+  origin:["app.use(cors({
+  origin:["https://plantparadisehub-2mefep4oz-laeeq-khans-projects.vercel.app"],
+  methods:["POST", "GET"],
+  credentials:true
+}));"],
   methods:["POST", "GET"],
   credentials:true
 }));
