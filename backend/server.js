@@ -13,11 +13,7 @@ const authRouter = require("./Router/auth");
 const ChatAppcontrollerRouter = require("./Router/ChatAppController");
 const ForumControllerRouter = require("./Router/ForumController");
 
-app.use(cors({
-  origin:["https://plantparadisehub.vercel.app"],
-  methods:["POST", "GET"],
-  credentials:true
-}));
+app.use(cors());
 app.use("/", authRouter);
 app.use("/", ChatAppcontrollerRouter); 
 app.use("/", ForumControllerRouter);
